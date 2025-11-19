@@ -6,7 +6,7 @@ avant d’entrer en BUT Informatique.
 
 # Objectif
 Développer mes bases en algorithmie et en Python, apprendre à utiliser GitHub, et progresser 
-régulièrement grâce à des exercices simples.
+régulièrement grâce à des exercices simples et des project plus conséquent.
 
 # Contenu
 - Exercices de bases : variables, conditions, boucles  
