@@ -13,4 +13,4 @@ popcorn_request = input("Souhaitez-vous prendre du popcorn?")
 if popcorn_request == "oui":
     prix_place += 3 
 #afficher le prix total a payer pour le cinéma
-print("Le prix total à payer est de", prix_place, "euros.") 
+print("Le prix total à payer est de", prix_place, "euros.")
