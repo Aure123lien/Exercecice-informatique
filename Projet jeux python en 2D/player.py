@@ -9,7 +9,7 @@ class Player(pygame.sprite.Sprite):
         self.game = game
         self.health = 100
         self.max_health = 100
-        self.attack = 10
+        self.attack = 25
         self.velocity = 3
         self.all_projectiles = pygame.sprite.Group()
         self.image = pygame.image.load("Projet jeux python en 2D/assets/Mage.png")
@@ -20,6 +20,15 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = 350
         self.rect.y = 410
+
+    def damage(self, amount):
+        if self.health - amount > amount:
+            self.health -= amount
+
+    def update_health_bar(self, surface):
+        # mettre la barre de vie visuellement
+        pygame.draw.rect(surface, (94, 90, 90), [self.rect.x + 50, self.rect.y + 30, self.max_health, 5])
+        pygame.draw.rect(surface, (255, 41, 0), [self.rect.x + 50, self.rect.y + 30, self.health, 5])
 
     def launch_projectile(self):
         # création de la classe projectile
