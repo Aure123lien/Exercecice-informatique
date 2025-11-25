@@ -14,7 +14,7 @@ class Game:
         self.player = Player(self)
         self.all_players.add(self.player)
         # generation de l'evenement
-        self.comet_event = CometFallEvent()
+        self.comet_event = CometFallEvent(self)
         # groupe de monstre
         self.all_monsters = pygame.sprite.Group()
         self.pressed = {}
@@ -53,6 +53,11 @@ class Game:
         for monster in self.all_monsters:
             monster.forward()
             monster.update_health_bar(screen)
+
+        for comet in self.comet_event.all_comets:
+            comet.fall()
+
+
         self.all_monsters.draw(screen)
 
         # appliquer mon groupe comet
