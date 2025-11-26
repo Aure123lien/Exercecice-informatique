@@ -3,6 +3,10 @@ pygame.init()
 import math
 from game import Game
 
+# Réaliser une clock
+clock = pygame.time.Clock()
+FPS = 120
+
 # on va générer la fenêtre du jeu
 pygame.display.set_caption("Jeu de tir en 2D")
 screen = pygame.display.set_mode((1080, 720))
@@ -72,6 +76,7 @@ while running:
             if play_button_rect.collidepoint(event.pos):
                 # lancer le jeux
                 game.start()
-
+    # fixer le nombre de FPS
+    clock.tick(FPS)
                 
 

@@ -5,8 +5,9 @@ class CometFallEvent:
 
     def __init__(self, game):
         self.percent = 0
-        self.percent_speed = 5
+        self.percent_speed = 10
         self.game = game
+        self.fall_mode = False
 
         self.all_comets = pygame.sprite.Group()
 
@@ -20,19 +21,19 @@ class CometFallEvent:
          self.percent = 0
 
     def meteor_fall(self):
-         self.all_comets.add(Comet(self))
+         # créer une boucle pour avoir plus de comète
+        for i in range(1, 10):
+            self.all_comets.add(Comet(self))
     
     def attempt_fall(self):
-         if self.is_full_loaded():
+         if self.is_full_loaded() and len(self.game.all_monsters) == 0:
               print("La pluie de comète arrive")
               self.meteor_fall()
-              self.reset_percent()
+              self.fall_mode = True
 
     def update_bar(self, surface):
         # ajouter un pourcentage
         self.add_percent()
-
-        self.attempt_fall()
 
         # barre noire (le fond)
         pygame.draw.rect(surface, (0, 0, 0), [

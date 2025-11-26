@@ -1,6 +1,6 @@
 import pygame
 from player import Player
-from monster import Monster
+from monster import Dragon, Monster, Ogre
 from comet_event import CometFallEvent
 
 # créer une seconde classe
@@ -23,15 +23,18 @@ class Game:
 
     def start(self):
         self.is_playing = True
-        self.spawn_monster()
-        self.spawn_monster()
+        self.spawn_monster(Ogre)
+        self.spawn_monster(Ogre)
+        self.spawn_monster(Dragon)
 
     def game_over(self):
         # remettre le jeux à zéro
         # réinitialiser la vie du personnage
         # retirer les monstres
         self.all_monsters = pygame.sprite.Group()
+        self.comet_event.all_comets = pygame.sprite.Group()
         self.player.health = self.player.max_health
+        self.comet_event.reset_percent()
         self.is_playing = False
 
     def update(self, screen):
@@ -72,6 +75,5 @@ class Game:
     def check_collision(self, sprite, group):
         return pygame.sprite.spritecollide(sprite, group, False, pygame.sprite.collide_mask)
 
-    def spawn_monster(self):
-        monster = Monster(self)
-        self.all_monsters.add(monster)
+    def spawn_monster(self, monster_class_name=Ogre):
+        self.all_monsters.add(monster_class_name.__call__(self))
