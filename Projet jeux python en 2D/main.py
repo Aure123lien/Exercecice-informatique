@@ -84,25 +84,38 @@ menu_rect = pygame.Rect(int(screen.get_width()*0.21), int(screen.get_height()*0.
 # Charger le jeu
 game = Game()
 
+# Timer de manche
+manche_start_time = 0
+
 running = True
 
 while running:
 
     screen.blit(background, (0, 0))
-
     mouse_pos = pygame.mouse.get_pos()
 
     # Partie en cours
     if game.is_playing:
         if not is_paused:
             game.update(screen)
+
+            # Score au centre supérieur
+            score_text = text_font.render(f"Score : {game.player.score}", True, (255, 255, 255))
+            score_rect = score_text.get_rect(center=(screen.get_width()//2, 50))
+            screen.blit(score_text, score_rect)
+
+            # Timer de manche
+            elapsed_time = (pygame.time.get_ticks() - manche_start_time) // 1000
+            timer_text = text_font.render(f"Temps : {elapsed_time}s", True, (255, 255, 255))
+            timer_rect = timer_text.get_rect(topleft=(20, 20))
+            screen.blit(timer_text, timer_rect)
+
         else:
             # Overlay menu pause
             overlay = pygame.Surface((1920, 1080), pygame.SRCALPHA)
             overlay.fill((0,0,0,150))
             screen.blit(overlay,(0,0))
 
-            # Fond rectangle menu pause
             pause_rect = pygame.Rect(screen.get_width()//2 - 250, screen.get_height()//2 - 100, 500, 200)
             pygame.draw.rect(screen, (50,50,50), pause_rect, border_radius=12)
             pygame.draw.rect(screen, (255,255,255), pause_rect, width=3, border_radius=12)
@@ -140,6 +153,7 @@ while running:
                 screen.blit(quit_img_hover, quit_hover_rect)
             else:
                 screen.blit(quit_img, quit_rect)
+
         else:
             # Fin de partie
             game_over_img = pygame.image.load("Projet jeux python en 2D/assets/Game_over.png").convert_alpha()
@@ -170,7 +184,6 @@ while running:
         overlay.fill((0,0,0,150))
         screen.blit(overlay,(0,0))
 
-        # Centrer le popup
         popup_rect = pygame.Rect((screen.get_width() - popup_width)//2,
                                  (screen.get_height() - popup_height)//2,
                                  popup_width,
@@ -187,7 +200,6 @@ while running:
         screen.blit(text1,text1_rect)
         screen.blit(text2,text2_rect)
 
-        # Bouton croix
         pygame.draw.circle(screen,(200,0,0),close_btn_center,close_btn_radius)
         pygame.draw.line(screen,(255,255,255),(close_btn_center[0]-8,close_btn_center[1]-8),(close_btn_center[0]+8,close_btn_center[1]+8),3)
         pygame.draw.line(screen,(255,255,255),(close_btn_center[0]+8,close_btn_center[1]-8),(close_btn_center[0]-8,close_btn_center[1]+8),3)
@@ -239,6 +251,7 @@ while running:
                     pygame.mixer.music.play(-1,fade_ms=50)
                     game.start()
                     game.sound_manager.play("click")
+                    manche_start_time = pygame.time.get_ticks()
                 elif credits_rect.collidepoint(event.pos):
                     show_popup = True
                     game.sound_manager.play("click")
@@ -251,6 +264,7 @@ while running:
                 if restart_rect.collidepoint(event.pos):
                     game.is_game_over = False
                     game.start()
+                    manche_start_time = pygame.time.get_ticks()
                     game.sound_manager.play("click")
                 elif menu_rect.collidepoint(event.pos):
                     game.is_game_over = False
@@ -261,6 +275,8 @@ while running:
                     game.sound_manager.play("click")
 
     clock.tick(FPS)
+
+
 
 
 

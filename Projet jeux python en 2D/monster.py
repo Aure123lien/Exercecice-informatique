@@ -1,7 +1,6 @@
 import pygame
 import random
 
-# créer la classe Monster
 class Monster(pygame.sprite.Sprite):
     def __init__(self, game, name, image_path, size):
         super().__init__()
@@ -13,10 +12,7 @@ class Monster(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, size)
         self.rect = self.image.get_rect()
         self.rect.x = 1920 + random.randint(0, 300)
-
-        # Monter les monstres légèrement
-        self.rect.y = 1080 - size[1] - 130  
-
+        self.rect.y = 1080 - size[1] - 130
         self.loot_amount = 10
         self.name = name
 
@@ -48,7 +44,6 @@ class Monster(pygame.sprite.Sprite):
         else:
             self.game.player.damage(self.attack)
 
-# classe Ogre
 class Ogre(Monster):
     def __init__(self, game):
         size = (200, 200)
@@ -56,7 +51,6 @@ class Ogre(Monster):
         self.set_speed(5)
         self.set_loot_amount(10)
 
-# classe Dragon
 class Dragon(Monster):
     def __init__(self, game):
         size = (400, 400)
@@ -66,6 +60,8 @@ class Dragon(Monster):
         self.attack = 0.8
         self.set_speed(3)
         self.set_loot_amount(50)
+
+
 
 
 
