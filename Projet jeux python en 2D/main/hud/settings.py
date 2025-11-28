@@ -1,4 +1,6 @@
 import pygame
+import json
+import os
 from ..configuration import *
 
 font_small = pygame.font.Font(None, SMALL_FONT_SIZE)
@@ -6,9 +8,11 @@ font_small = pygame.font.Font(None, SMALL_FONT_SIZE)
 class SettingsMenu:
     def __init__(self, screen):
         self.screen = screen
+        self.settings_file = os.path.join(os.path.dirname(__file__), '..', '..', 'settings.json')
         self.music_volume = INITIAL_MUSIC_VOLUME
         self.sound_volume = INITIAL_SOUND_VOLUME
         self.fullscreen_mode = 0  # 0: fenetre pleine ecran, 1: Pleine ecran
+        self.load_settings()
 
         # Les barres de volume du son et musiques
         self.music_bar_rect = pygame.Rect(0, 0, 200, 10)
@@ -24,6 +28,29 @@ class SettingsMenu:
 
         # Les polices d'écriture
         self.font_small = pygame.font.Font(None, SMALL_FONT_SIZE)
+
+    def load_settings(self):
+        if os.path.exists(self.settings_file):
+            try:
+                with open(self.settings_file, 'r') as f:
+                    data = json.load(f)
+                    self.music_volume = data.get('music_volume', INITIAL_MUSIC_VOLUME)
+                    self.sound_volume = data.get('sound_volume', INITIAL_SOUND_VOLUME)
+                    self.fullscreen_mode = data.get('fullscreen_mode', 0)
+            except (json.JSONDecodeError, KeyError):
+                pass  # Utiliser les valeurs par défaut en cas d'erreur
+
+    def save_settings(self):
+        data = {
+            'music_volume': self.music_volume,
+            'sound_volume': self.sound_volume,
+            'fullscreen_mode': self.fullscreen_mode
+        }
+        try:
+            with open(self.settings_file, 'w') as f:
+                json.dump(data, f, indent=4)
+        except IOError:
+            pass  # Ignorer les erreurs d'écriture
 
     def draw(self):
         overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
@@ -93,10 +120,12 @@ class SettingsMenu:
             rel_x = max(0, min(event.pos[0] - self.music_bar_rect.x, self.music_bar_rect.width))
             self.music_volume = rel_x / self.music_bar_rect.width
             self.music_slider_rect.x = self.music_bar_rect.x + rel_x - 10
+            self.save_settings()
         if self.dragging_sound:
             rel_x = max(0, min(event.pos[0] - self.sound_bar_rect.x, self.sound_bar_rect.width))
             self.sound_volume = rel_x / self.sound_bar_rect.width
             self.sound_slider_rect.x = self.sound_bar_rect.x + rel_x - 10
+            self.save_settings()
 
     def handle_mouse_down(self, pos):
         if self.music_slider_rect.collidepoint(pos):
@@ -104,9 +133,11 @@ class SettingsMenu:
         if self.sound_slider_rect.collidepoint(pos):
             self.dragging_sound = True
         if self.windowed_fullscreen_btn_rect.collidepoint(pos):
-            self.fullscreen_mode = 0  
+            self.fullscreen_mode = 0
+            self.save_settings()
         if self.fullscreen_btn_rect.collidepoint(pos):
-            self.fullscreen_mode = 1  
+            self.fullscreen_mode = 1
+            self.save_settings()
 
     def handle_mouse_up(self):
         self.dragging_music = False
