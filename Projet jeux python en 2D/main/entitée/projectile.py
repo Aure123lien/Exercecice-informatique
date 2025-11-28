@@ -10,8 +10,8 @@ class Projectile(pygame.sprite.Sprite):
            self.player = player
            self.image = pygame.image.load(PROJECTILE_IMG_PATH)
 
-           # Augmentation de la taille du projectile
-           self.image = pygame.transform.scale(self.image, (100, 100))
+           # Réduction de la taille du projectile
+           self.image = pygame.transform.scale(self.image, (70, 70))
 
            self.rect = self.image.get_rect()
            self.rect.x = player.rect.x + 300

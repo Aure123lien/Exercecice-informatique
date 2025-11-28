@@ -14,7 +14,7 @@ class Monster(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, size)
         self.rect = self.image.get_rect()
         self.rect.x = SCREEN_WIDTH + random.randint(0, 300)
-        self.rect.y = SCREEN_HEIGHT - size[1] - 130
+        self.rect.y = SCREEN_HEIGHT - size[1] - 50
         self.loot_amount = OGRE_LOOT
         self.name = name
 
@@ -49,8 +49,9 @@ class Monster(pygame.sprite.Sprite):
 # création des différente classes de monstres
 class Ogre(Monster):
     def __init__(self, game):
-        size = (200, 200)
+        size = (150, 150)
         super().__init__(game, "ogre", OGRE_IMG_PATH, size)
+        self.rect.y = SCREEN_HEIGHT - size[1] - 70
         self.set_speed(5)
         self.set_loot_amount(OGRE_LOOT)
 
@@ -58,6 +59,7 @@ class Dragon(Monster):
     def __init__(self, game):
         size = (400, 400)
         super().__init__(game, "dragon", DRAGON_IMG_PATH, size)
+        self.rect.y = SCREEN_HEIGHT - size[1] - 30
         self.health = DRAGON_HEALTH
         self.max_health = DRAGON_HEALTH
         self.attack = MONSTER_ATTACK_DRAGON

@@ -23,7 +23,7 @@ class Comet(pygame.sprite.Sprite):
         if len(self.comet_event.all_comets) == 0:
             print("La pluie de comète est fini")
             self.comet_event.reset_percent()
-            self.comet_event.game.start()
+            self.comet_event.game.restart_wave()
 
     def fall(self):
         self.rect.y += self.velocity

@@ -19,7 +19,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         # Position initiale sur le sol
         self.rect.x = 350
-        self.rect.y = SCREEN_HEIGHT - self.image.get_height() - 130
+        self.rect.y = SCREEN_HEIGHT - self.image.get_height() - 50
 
     def damage(self, amount):
         self.health -= amount

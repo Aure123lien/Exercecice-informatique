@@ -53,11 +53,18 @@ class Game:
     def start(self):
         self.is_playing = True
         self.player.rect.x = 350
-        self.player.rect.y = SCREEN_HEIGHT - self.player.image.get_height() - 130
+        self.player.rect.y = SCREEN_HEIGHT - self.player.image.get_height() - 50
         self.player.health = self.player.max_health
         self.all_monsters.empty()
         self.comet_event.all_comets.empty()
         self.comet_event.reset_percent()
+        for _ in range(2):
+            self.spawn_monster(Ogre)
+        self.spawn_monster(Dragon)
+
+    # Relancer une vague après l'événement comète
+    def restart_wave(self):
+        self.all_monsters.empty()
         for _ in range(2):
             self.spawn_monster(Ogre)
         self.spawn_monster(Dragon)
