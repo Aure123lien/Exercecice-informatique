@@ -5,6 +5,7 @@ pygame.init()
 
 from .game import Game
 from .hud.menu import MainMenu
+from .hud.level_menu import LevelMenu
 from .hud.settings import SettingsMenu
 from .hud.game_over import GameOverScreen
 from .hud.pause import PauseMenu
@@ -32,9 +33,10 @@ game_music_path = MUSIC_GAME_PATH
 # Menu pause
 is_paused = False
 
-# Fenêtre de jeu
+# Fenêtre de jeu - Plein écran à la résolution du bureau
 pygame.display.set_caption("Jeu de tir en 2D")
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+SCREEN_WIDTH, SCREEN_HEIGHT = screen.get_size()
 
 # Charger le jeu
 game = Game()
@@ -42,7 +44,15 @@ manche_start_time = 0
 
 # Background du jeu
 background = pygame.image.load(BACKGROUND_PATH).convert()
-background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
+bg_width, bg_height = background.get_size()
+scale_x = SCREEN_WIDTH / bg_width
+scale_y = SCREEN_HEIGHT / bg_height
+scale = min(scale_x, scale_y)
+new_width = int(bg_width * scale)
+new_height = int(bg_height * scale)
+background = pygame.transform.smoothscale(background, (new_width, new_height))
+bg_x = (SCREEN_WIDTH - new_width) // 2
+bg_y = (SCREEN_HEIGHT - new_height) // 2
 
 # Volume
 music_volume = INITIAL_MUSIC_VOLUME
@@ -50,8 +60,9 @@ sound_volume = INITIAL_SOUND_VOLUME
 pygame.mixer.music.set_volume(music_volume)
 game.sound_manager.set_volume(sound_volume)
 
-# Composants d'interface utilisateur
+# Composants d'interface utilisateur (après mise à jour de SCREEN_WIDTH)
 main_menu = MainMenu(screen, game.best_score)
+level_menu = LevelMenu(screen)
 settings_menu = SettingsMenu(screen)
 game_over_screen = GameOverScreen(screen)
 pause_menu = PauseMenu(screen)
@@ -60,11 +71,14 @@ credits_popup = CreditsPopup(screen)
 # Les variables des menus
 show_settings = False
 show_popup = False
+show_level_menu = False
 
 # Début de la boucle principale du jeux
 running = True
 while running:
-    screen.blit(background, (0, 0)) 
+    # Blitter le background seulement pendant le jeu, pas dans les menus
+    if game.is_playing:
+        screen.blit(background, (bg_x, bg_y))
     mouse_pos = pygame.mouse.get_pos()
 
     # Quand la partie est en cours
@@ -84,7 +98,9 @@ while running:
 
     # Menu principal et de fin
     else:
-        if not game.is_game_over:
+        if show_level_menu:
+            level_menu.draw(mouse_pos)
+        elif not game.is_game_over:
             main_menu.best_score = game.best_score
             main_menu.draw(mouse_pos)
         else:
@@ -135,23 +151,34 @@ while running:
                     pygame.mixer.music.load(MUSIC_MENU_PATH)
                     pygame.mixer.music.play(-1, fade_ms=50)
             # Ouvrir menu réglages depuis menu principal
-            if not game.is_playing and not game.is_game_over:
+            if not game.is_playing and not game.is_game_over and not show_level_menu:
                 action = main_menu.handle_click(event.pos)
                 if action == "settings":
                     show_settings = True
                 elif action == "play":
-                    pygame.mixer.music.stop()
-                    pygame.mixer.music.load(game_music_path)
-                    pygame.mixer.music.play(-1, fade_ms=50)
-                    game.start()
+                    show_level_menu = True
                     game.sound_manager.play("click")
-                    manche_start_time = pygame.time.get_ticks()
                 elif action == "credits":
                     show_popup = True
                     game.sound_manager.play("click")
                 elif action == "quit":
                     pygame.quit()
                     sys.exit()
+            # Gestion du menu de niveaux
+            elif show_level_menu:
+                action = level_menu.handle_click(event.pos)
+                if action == "back":
+                    show_level_menu = False
+                    game.sound_manager.play("click")
+                elif action and action.startswith("level_"):
+                    level = int(action.split("_")[1])
+                    pygame.mixer.music.stop()
+                    pygame.mixer.music.load(game_music_path)
+                    pygame.mixer.music.play(-1, fade_ms=50)
+                    game.start(level=level)
+                    game.sound_manager.play("click")
+                    manche_start_time = pygame.time.get_ticks()
+                    show_level_menu = False
             # Fermer popup crédits
             if show_popup and credits_popup.handle_click(event.pos) == "close":
                 show_popup = False

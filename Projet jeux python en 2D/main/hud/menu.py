@@ -12,7 +12,7 @@ class MainMenu:
 
         # Charger les images du menu
         self.background = pygame.image.load(BACKGROUND_PATH).convert()
-        self.background = pygame.transform.scale(self.background, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.background = pygame.transform.smoothscale(self.background, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
         self.banner = pygame.image.load(BANNER_PATH).convert_alpha()
         self.banner = pygame.transform.scale(self.banner, (int(SCREEN_WIDTH * BANNER_SCALE_FACTOR), int(SCREEN_HEIGHT * BANNER_HEIGHT_FACTOR)))
@@ -20,7 +20,7 @@ class MainMenu:
         self.banner_rect.centerx = SCREEN_WIDTH // 2
         self.banner_rect.y = int(SCREEN_HEIGHT * BANNER_Y_FACTOR)
 
-        # Les différents boutons qui se trouvent dans le menu
+        # Les différents boutons qui se trouvent dans le menu "jouer,credit,quitter"
         self.play_button = pygame.image.load(BUTTON_PATH).convert_alpha()
         self.play_button = pygame.transform.scale(self.play_button, (int(SCREEN_WIDTH * BUTTON_SCALE_FACTOR), int(SCREEN_HEIGHT * BUTTON_HEIGHT_FACTOR)))
         self.play_button_rect = self.play_button.get_rect()

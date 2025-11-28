@@ -1,13 +1,13 @@
 # Toutes les donnée pour la configuration pour le jeu
 
 # Les paramètres pour l'écran
-SCREEN_WIDTH = 1280
-SCREEN_HEIGHT = 720
+SCREEN_WIDTH = 1920
+SCREEN_HEIGHT = 1080
 FPS = 120
 
 # Les différents chemins des images et son qui se situent dans le dossier assets
 ASSETS_DIR = "assets"
-BACKGROUND_PATH = f"{ASSETS_DIR}/Background.jpg"
+BACKGROUND_PATH = f"{ASSETS_DIR}/Background.png"
 BANNER_PATH = f"{ASSETS_DIR}/banner.png"
 BUTTON_PATH = f"{ASSETS_DIR}/button.png"
 CREDITS_IMG_PATH = f"{ASSETS_DIR}/credits.png"

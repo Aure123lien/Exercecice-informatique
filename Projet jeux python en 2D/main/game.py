@@ -50,24 +50,34 @@ class Game:
         self.player.add_score(points)
 
     # Démarrer une partie
-    def start(self):
+    def start(self, level=1):
         self.is_playing = True
+        self.level = level
         self.player.rect.x = 350
         self.player.rect.y = SCREEN_HEIGHT - self.player.image.get_height() - 50
         self.player.health = self.player.max_health
         self.all_monsters.empty()
         self.comet_event.all_comets.empty()
         self.comet_event.reset_percent()
-        for _ in range(2):
+
+        # Ajuster la difficulté selon le niveau
+        num_ogres = 2 + (level - 1)
+        num_dragons = 1 + (level - 1) // 2  # 1 pour niv 1-2, 2 pour niv 3
+
+        for _ in range(num_ogres):
             self.spawn_monster(Ogre)
-        self.spawn_monster(Dragon)
+        for _ in range(num_dragons):
+            self.spawn_monster(Dragon)
 
     # Relancer une vague après l'événement comète
     def restart_wave(self):
         self.all_monsters.empty()
-        for _ in range(2):
+        num_ogres = 2 + (self.level - 1)
+        num_dragons = 1 + (self.level - 1) // 2
+        for _ in range(num_ogres):
             self.spawn_monster(Ogre)
-        self.spawn_monster(Dragon)
+        for _ in range(num_dragons):
+            self.spawn_monster(Dragon)
 
     # Fin de la partie
     def game_over(self):

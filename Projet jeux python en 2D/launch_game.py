@@ -7,6 +7,7 @@ import os
 # Ajouter le répertoire actuel pour l'envoi
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, current_dir)
+os.chdir(current_dir)  # Changer le répertoire de travail
 
 # Importer et lancer le jeu
 try:
