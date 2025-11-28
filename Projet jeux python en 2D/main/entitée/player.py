@@ -2,6 +2,8 @@ import pygame
 from .projectile import Projectile
 from ..configuration import *
 
+font = pygame.font.SysFont("Arial", 16)
+
 # création de la classe du joueur, définir tous ses attributs
 class Player(pygame.sprite.Sprite):
     # Le joueur principal le mage tire des projectiles
@@ -28,8 +30,15 @@ class Player(pygame.sprite.Sprite):
             self.game.game_over()
 
     def update_health_bar(self, surface):
-        pygame.draw.rect(surface, GRAY, [self.rect.x + 50, self.rect.y + 30, self.max_health, 5])
-        pygame.draw.rect(surface, RED, [self.rect.x + 50, self.rect.y + 30, self.health, 5])
+        bar_width = 100
+        bar_height = 5
+        bar_x = self.rect.centerx - bar_width // 2
+        bar_y = self.rect.y - 30
+        pygame.draw.rect(surface, GRAY, [bar_x, bar_y, bar_width, bar_height])
+        pygame.draw.rect(surface, RED, [bar_x, bar_y, (self.health / self.max_health) * bar_width, bar_height])
+        text = font.render(f"{int(self.health)}/{int(self.max_health)}", True, BLACK)
+        text_rect = text.get_rect(centerx=self.rect.centerx, y=bar_y - 20)
+        surface.blit(text, text_rect)
 
     def launch_projectile(self):
         # Créer un nouveau projectile et jouer le son

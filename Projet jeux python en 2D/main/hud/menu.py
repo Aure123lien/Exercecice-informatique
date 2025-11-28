@@ -64,12 +64,6 @@ class MainMenu:
             else:
                 self.screen.blit(self.settings_img, self.settings_rect)
 
-            # Afficher le meilleur score à côté du bouton jouer
-            best_score_text = text_font.render(f"Meilleur Score: {self.best_score}", True, BLACK)
-            best_score_rect = best_score_text.get_rect()
-            best_score_rect.left = self.play_button_rect.right + 20
-            best_score_rect.centery = self.play_button_rect.centery
-            self.screen.blit(best_score_text, best_score_rect)
 
     def handle_click(self, pos):
         if self.play_button_rect.collidepoint(pos):

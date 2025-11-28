@@ -7,9 +7,9 @@ text_font = pygame.font.Font(FONT_PATH, TEXT_FONT_SIZE)
 
 class LevelMenu:
     # Classe pour gérer le menu de sélection des niveaux
-    def __init__(self, screen, completed_levels):
+    def __init__(self, screen, level_scores):
         self.screen = screen
-        self.completed_levels = completed_levels
+        self.level_scores = level_scores
 
         # Charger les images du menu
         # J'ai utilisé smoothscale pour éviter les pixels
@@ -87,7 +87,11 @@ class LevelMenu:
         for i in range(3):
             rect = self.level_rects[i]
             adjusted_rect = rect.move(center_offset, 0)
-            is_locked = (i + 1) > self.completed_levels + 1
+            # Seuils pour débloquer les niveaux
+            thresholds = {1: 0, 2: 500, 3: 500}  # Niveau 1 toujours débloqué, 2 si score niv1 >=500, 3 si score niv2 >=500
+            prev_level = i  # Pour niveau 1, pas de précédent, pour 2, niv1, pour 3, niv2
+            required_score = self.level_scores.get(prev_level, 0) if i > 0 else 0
+            is_locked = required_score < thresholds[i+1]
             is_hover = adjusted_rect.collidepoint(mouse_pos) and not is_locked
             color = self.level_hover_colors[i] if is_hover else self.level_colors[i]
             if is_locked:
@@ -122,8 +126,12 @@ class LevelMenu:
                 self.screen.blit(scaled_img, img_rect)
 
             level_text = text_font.render(f"Niveau {i+1}", True, BLACK)
-            text_rect = level_text.get_rect(center=(adjusted_rect.centerx + 40, adjusted_rect.centery))
+            text_rect = level_text.get_rect(center=(adjusted_rect.centerx + 40, adjusted_rect.centery - 10))
             self.screen.blit(level_text, text_rect)
+
+            score_text = text_font.render(f"Meilleur: {self.level_scores.get(i+1, 0)}", True, BLACK)
+            score_rect = score_text.get_rect(center=(adjusted_rect.centerx + 40, adjusted_rect.centery + 10))
+            self.screen.blit(score_text, score_rect)
 
         # Bouton retour gestion de colission et gestion de l'emplacement sur la fenetre de jeux
         adjusted_back_rect = self.back_button_rect.move(center_offset, 0)
@@ -136,7 +144,10 @@ class LevelMenu:
     def handle_click(self, pos, overlay=False):
         center_offset = (SCREEN_WIDTH // 2 - SCREEN_WIDTH // 6) if overlay else 0
         for i in range(3):
-            if (i + 1) <= self.completed_levels + 1:
+            thresholds = {1: 0, 2: 500, 3: 500}
+            prev_level = i
+            required_score = self.level_scores.get(prev_level, 0) if i > 0 else 0
+            if required_score >= thresholds[i+1]:
                 adjusted_rect = self.level_rects[i].move(center_offset, 0)
                 if adjusted_rect.collidepoint(pos):
                     return f"level_{i+1}"

@@ -91,7 +91,7 @@ game.sound_manager.set_volume(sound_volume)
 
 # Toutes les interface afficher
 main_menu = MainMenu(screen, game.best_score)
-level_menu = LevelMenu(screen, game.completed_levels)
+level_menu = LevelMenu(screen, game.level_scores)
 settings_menu = SettingsMenu(screen)
 game_over_screen = GameOverScreen(screen)
 pause_menu = PauseMenu(screen)
@@ -130,7 +130,7 @@ while running:
     else:
         if show_level_menu:
             main_menu.best_score = game.best_score
-            level_menu.completed_levels = game.completed_levels
+            level_menu.level_scores = game.level_scores
             main_menu.draw(mouse_pos, no_banner=True, hide_buttons=True)
             level_menu.draw(mouse_pos, overlay=True)
         elif not game.is_game_over:
@@ -151,6 +151,8 @@ while running:
     # Gestion des événements mal optimiser (a revoir)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            game.save_level_scores()
+            game.save_best_score()
             running = False
             pygame.quit()
             print("Le jeu se ferme")

@@ -22,13 +22,17 @@ class Game:
         except:
             self.best_score = 0
 
-        # Charger les niveaux complétés par le joueur
-        self.completed_levels_path = os.path.join(os.path.dirname(__file__), '..', 'completed_levels.txt')
+        # Charger les scores par niveau
+        self.level_scores_path = os.path.join(os.path.dirname(__file__), '..', 'level_scores.txt')
+        self.level_scores = {}
         try:
-            with open(self.completed_levels_path, 'r') as f:
-                self.completed_levels = int(f.read().strip())
+            with open(self.level_scores_path, 'r') as f:
+                for line in f:
+                    if ':' in line:
+                        level, score = line.strip().split(': ')
+                        self.level_scores[int(level.replace('level', ''))] = float(score)
         except:
-            self.completed_levels = 0
+            self.level_scores = {1: 0.0, 2: 0.0, 3: 0.0}
 
         # Joueur
         self.player = Player(self)
@@ -55,6 +59,15 @@ class Game:
         self.go_restart_button = pygame.Rect(SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT // 2 - 50, 300, 60)
         self.go_menu_button = pygame.Rect(SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT // 2 + 30, 300, 60)
 
+    def save_level_scores(self):
+        with open(self.level_scores_path, 'w') as f:
+            for lvl in sorted(self.level_scores.keys()):
+                f.write(f"level{lvl}: {self.level_scores[lvl]}\n")
+
+    def save_best_score(self):
+        with open(self.best_score_path, 'w') as f:
+            f.write(str(self.best_score))
+
     # ajout des points pour les monstres
     def add_score(self, points):
         self.player.add_score(points)
@@ -76,20 +89,22 @@ class Game:
         num_ogres = 2 + (level - 1)
         num_dragons = 1 + (level - 1) // 2  # 1 pour niv 1-2, 2 pour niv 3 etc
 
+        multiplier = self.level * 0.5 + 0.5
         for _ in range(num_ogres):
-            self.spawn_monster(Ogre)
+            self.spawn_monster(Ogre, multiplier)
         for _ in range(num_dragons):
-            self.spawn_monster(Dragon)
+            self.spawn_monster(Dragon, multiplier)
 
     # Relancer une vague de monstre après l'événement comète
     def restart_wave(self):
         self.all_monsters.empty()
         num_ogres = 2 + (self.level - 1)
         num_dragons = 1 + (self.level - 1) // 2
+        multiplier = self.level * 0.5 + 0.5
         for _ in range(num_ogres):
-            self.spawn_monster(Ogre)
+            self.spawn_monster(Ogre, multiplier)
         for _ in range(num_dragons):
-            self.spawn_monster(Dragon)
+            self.spawn_monster(Dragon, multiplier)
 
     # Fin de la partie
     def game_over(self):
@@ -98,12 +113,10 @@ class Game:
             self.best_score = self.player.score
             with open(self.best_score_path, 'w') as f:
                 f.write(str(self.best_score))
-        # Mettre à jour les niveaux complétés si le score est positif (actuellement cette condition a revoir plus tard pour comment passer d'un niveaux a un autre)
-        # Réfléchir à cette condition car je pourrais peut-être la changer a reflechir
-        if self.player.score > 0:
-            self.completed_levels = max(self.completed_levels, self.level)
-            with open(self.completed_levels_path, 'w') as f:
-                f.write(str(self.completed_levels))
+        # Mettre à jour le score du niveau si c'est le meilleur
+        if self.player.score > self.level_scores.get(self.level, 0):
+            self.level_scores[self.level] = self.player.score
+            self.save_level_scores()
         self.all_monsters.empty()
         self.comet_event.all_comets.empty()
         self.player.health = self.player.max_health
@@ -163,5 +176,5 @@ class Game:
         return pygame.sprite.spritecollide(sprite, group, False, pygame.sprite.collide_mask)
 
     # Spawn des monstres
-    def spawn_monster(self, monster_class_name=Ogre):
-        self.all_monsters.add(monster_class_name(self))
+    def spawn_monster(self, monster_class_name=Ogre, multiplier=1):
+        self.all_monsters.add(monster_class_name(self, multiplier))
