@@ -36,6 +36,14 @@ class Monster(pygame.sprite.Sprite):
             self.velocity = random.randint(1, int(self.default_speed))
             self.health = self.max_health
             self.game.add_score(self.loot_amount)
+            # Donner de xp selon le type de monstre tuer pendant la partie (besoin d'optimisation plus tard actuellement en test)
+            if self.name == "ogre":
+                xp_amount = 10
+            elif self.name == "dragon":
+                xp_amount = 30
+            else:
+                xp_amount = 0
+            self.game.player.add_xp(xp_amount)
             # Si l'événement comète est chargé, déclencher la chute
             if self.game.comet_event.is_full_loaded():
                 self.game.all_monsters.remove(self)

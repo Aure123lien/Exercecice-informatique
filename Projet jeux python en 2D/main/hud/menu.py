@@ -50,14 +50,26 @@ class MainMenu:
         self.settings_img_hover = pygame.transform.scale(self.settings_img_original, (int(SCREEN_WIDTH * 0.135), int(SCREEN_HEIGHT * 0.08)))
         self.settings_hover_rect = self.settings_img_hover.get_rect(center=self.settings_rect.center)
 
+        # Bouton statistiques dans le menu
+        self.stats_button = pygame.image.load(STATISTIQUE_IMG_PATH).convert_alpha()
+        self.stats_button = pygame.transform.scale(self.stats_button, (int(SCREEN_WIDTH * BUTTON_SCALE_FACTOR), int(SCREEN_HEIGHT * BUTTON_HEIGHT_FACTOR)))
+        self.stats_button_rect = self.stats_button.get_rect()
+        self.stats_button_rect.bottomleft = (20, SCREEN_HEIGHT - 20)
+        self.stats_button_hover = pygame.transform.scale(self.stats_button, (int(SCREEN_WIDTH * 0.27), int(SCREEN_HEIGHT * 0.15)))
+        self.stats_button_hover_rect = self.stats_button_hover.get_rect(center=self.stats_button_rect.center)
+
     def draw(self, mouse_pos, no_banner=False, hide_buttons=False):
         self.screen.blit(self.background, (0, 0))
         if not no_banner:
             self.screen.blit(self.banner, self.banner_rect)
         if not hide_buttons:
             self.screen.blit(self.play_button_hover if self.play_button_rect.collidepoint(mouse_pos) else self.play_button, self.play_button_rect)
+
             self.screen.blit(self.credits_img_hover if self.credits_rect.collidepoint(mouse_pos) else self.credits_img, self.credits_rect)
+
             self.screen.blit(self.quit_img_hover if self.quit_rect.collidepoint(mouse_pos) else self.quit_img, self.quit_rect)
+
+            self.screen.blit(self.stats_button_hover if self.stats_button_rect.collidepoint(mouse_pos) else self.stats_button, self.stats_button_rect)
 
             if self.settings_rect.collidepoint(mouse_pos):
                 self.screen.blit(self.settings_img_hover, self.settings_hover_rect)
@@ -72,6 +84,8 @@ class MainMenu:
             return "credits"
         elif self.quit_rect.collidepoint(pos):
             return "quit"
+        elif self.stats_button_rect.collidepoint(pos):
+            return "stats"
         elif self.settings_rect.collidepoint(pos):
             return "settings"
         return None

@@ -142,6 +142,12 @@ class Game:
 
     # Mise à jour de la partie
     def update(self, screen):
+        # Déplacements de mon joueur
+        if self.pressed.get(pygame.K_RIGHT) and self.player.rect.right < SCREEN_WIDTH:
+            self.player.move_right()
+        elif self.pressed.get(pygame.K_LEFT) and self.player.rect.left > 0:
+            self.player.move_left()
+
         # Afficher le joueur et sa barre de vie
         screen.blit(self.player.image, self.player.rect)
         self.player.update_health_bar(screen)
@@ -164,12 +170,6 @@ class Game:
         for comet in self.comet_event.all_comets:
             comet.fall()
         self.comet_event.all_comets.draw(screen)
-
-        # Déplacements joueur
-        if self.pressed.get(pygame.K_RIGHT) and self.player.rect.right < SCREEN_WIDTH:
-            self.player.move_right()
-        elif self.pressed.get(pygame.K_LEFT) and self.player.rect.left > 0:
-            self.player.move_left()
 
     # Système de Collision
     def check_collision(self, sprite, group):

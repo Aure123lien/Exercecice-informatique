@@ -7,6 +7,7 @@ from .game import Game
 from .hud.menu import MainMenu
 from .hud.level_menu import LevelMenu
 from .hud.settings import SettingsMenu
+from .hud.stats_menu import StatsMenu
 from .hud.game_over import GameOverScreen
 from .hud.pause import PauseMenu
 from .hud.credits import CreditsPopup
@@ -92,6 +93,7 @@ game.sound_manager.set_volume(sound_volume)
 # Toutes les interface afficher
 main_menu = MainMenu(screen, game.best_score)
 level_menu = LevelMenu(screen, game.level_scores)
+stats_menu = StatsMenu(screen, game.player, game.best_score, game.level_scores)
 settings_menu = SettingsMenu(screen)
 game_over_screen = GameOverScreen(screen)
 pause_menu = PauseMenu(screen)
@@ -101,6 +103,7 @@ credits_popup = CreditsPopup(screen)
 show_settings = False
 show_popup = False
 show_level_menu = False
+show_stats_menu = False
 
 # Amélioration s'est de splitter cette boucle en différente fonction
 # Début de la boucle principale du jeux
@@ -133,6 +136,8 @@ while running:
             level_menu.level_scores = game.level_scores
             main_menu.draw(mouse_pos, no_banner=True, hide_buttons=True)
             level_menu.draw(mouse_pos, overlay=True)
+        elif show_stats_menu:
+            stats_menu.draw(mouse_pos)
         elif not game.is_game_over:
             main_menu.best_score = game.best_score
             main_menu.draw(mouse_pos)
@@ -194,12 +199,15 @@ while running:
                     pygame.mixer.music.load(MUSIC_MENU_PATH)
                     pygame.mixer.music.play(-1, fade_ms=50)
             # Ouvrir menu réglages depuis menu principal
-            if not game.is_playing and not game.is_game_over and not show_level_menu:
+            if not game.is_playing and not game.is_game_over and not show_level_menu and not show_stats_menu:
                 action = main_menu.handle_click(event.pos)
                 if action == "settings":
                     show_settings = True
                 elif action == "play":
                     show_level_menu = True
+                    game.sound_manager.play("click")
+                elif action == "stats":
+                    show_stats_menu = True
                     game.sound_manager.play("click")
                 elif action == "credits":
                     show_popup = True
@@ -222,6 +230,12 @@ while running:
                     game.sound_manager.play("click")
                     manche_start_time = pygame.time.get_ticks()
                     show_level_menu = False
+            # Gestion du menu des statistique
+            elif show_stats_menu:
+                action = stats_menu.handle_click(event.pos)
+                if action == "back":
+                    show_stats_menu = False
+                    game.sound_manager.play("click")
             # Fermer popup crédits
             if show_popup and credits_popup.handle_click(event.pos) == "close":
                 show_popup = False

@@ -60,9 +60,9 @@ class LevelMenu:
             current_y += card_height + spacing
 
         # Bouton retour uniquement dans le menu niveaux
-        self.back_button = pygame.image.load(ASSETS_DIR + "/retour.png").convert_alpha()
-        button_width = 400  
-        button_height = 120
+        self.back_button = pygame.image.load(RETOUR_IMG_PATH).convert_alpha()
+        button_width = 500
+        button_height = 150
         self.back_button = pygame.transform.scale(self.back_button, (button_width, button_height))
         self.back_button_rect = self.back_button.get_rect()
         self.back_button_rect.centerx = SCREEN_WIDTH // 6
@@ -70,7 +70,7 @@ class LevelMenu:
         self.back_button_hover = pygame.transform.scale(self.back_button, (int(button_width * 1.05), int(button_height * 1.05)))
         self.back_button_hover_rect = self.back_button_hover.get_rect(center=self.back_button_rect.center)
 
-    # Cette méthode draw est assez longue (il faudrait trouver un moyen de la réduire)
+    # Cette méthode de dessin est assez longue (il faudrait trouver un moyen de la réduire)
     def draw(self, mouse_pos, overlay=False):
         if not overlay:
             self.screen.blit(self.background, (0, 0))
